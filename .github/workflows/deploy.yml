@@ -13,23 +13,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Paso 2: Instalar Docker Compose
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      # Paso 3: Log in to DockerHub
+      # Paso 2: Log in to DockerHub
       - name: Log in to DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-      # Paso 4: Construir y subir imágenes Docker
+      # Paso 3: Construir y subir imágenes Docker
       - name: Build and push Docker images
         run: |
           docker-compose build
           docker-compose push
 
-      # Paso 5: Desplegar los servicios
+      # Paso 4: Desplegar los servicios
       - name: Deploy with Docker Compose
         run: docker-compose up -d
 
