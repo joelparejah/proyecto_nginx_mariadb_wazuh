@@ -20,7 +20,7 @@ services:
       - mariadb_data:/var/lib/mysql
 
   wazuh:
-    image: wazuh/wazuh:latest
+    image: wazuh/wazuh:4.4.0
     container_name: wazuh
     environment:
       - WAZUH_MANAGER=yes
