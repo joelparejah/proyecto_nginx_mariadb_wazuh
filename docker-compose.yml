@@ -2,7 +2,8 @@ version: "3.8"
 
 services:
   nginx:
-    image: nginx:latest
+    build: .
+    image: ${{ secrets.DOCKER_USERNAME }}/nginx:latest
     container_name: nginx_server
     ports:
       - "80:80"
@@ -12,7 +13,8 @@ services:
       - app
 
   app:
-    image: mariadb:latest
+    build: .
+    image: ${{ secrets.DOCKER_USERNAME }}/mariadb:latest
     container_name: mariadb_server
     environment:
       MYSQL_ROOT_PASSWORD: root_password
@@ -23,7 +25,8 @@ services:
       - "3306:3306"
 
   wazuh:
-    image: wazuh/wazuh-manager:4.4.0
+    build: .
+    image: ${{ secrets.DOCKER_USERNAME }}/wazuh:4.4.0
     container_name: wazuh_server
     ports:
       - "1514:1514"
