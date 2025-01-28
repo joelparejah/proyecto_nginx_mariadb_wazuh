@@ -9,9 +9,11 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Paso 1: Checkout del código
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Paso 2: Instalar Docker y Docker Compose
       - name: Install Docker and Docker Compose
         run: |
           sudo apt-get update
@@ -23,18 +25,27 @@ jobs:
           sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           sudo chmod +x /usr/local/bin/docker-compose
 
+      # Paso 3: Log in to DockerHub
       - name: Log in to DockerHub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
+      # Paso 4: Construir y subir imágenes Docker
       - name: Build and push Docker images
         run: |
-          # Usar envsubst para sustituir variables en el archivo docker-compose.yml
-          envsubst < docker-compose.yml > docker-compose.temp.yml
-          docker-compose -f docker-compose.temp.yml build
-          docker-compose -f docker-compose.temp.yml push
+          # Construir la imagen de nginx
+          docker build -t "${{ secrets.DOCKER_USERNAME }}/nginx:latest" -f ./Dockerfile .
+          docker push "${{ secrets.DOCKER_USERNAME }}/nginx:latest"
 
+          # Construir la imagen de mariadb
+          docker build -t "${{ secrets.DOCKER_USERNAME }}/mariadb:latest" -f ./Dockerfile .
+          docker push "${{ secrets.DOCKER_USERNAME }}/mariadb:latest"
+
+          # Construir la imagen de wazuh
+          docker build -t "${{ secrets.DOCKER_USERNAME }}/wazuh:latest" -f ./Dockerfile .
+          docker push "${{ secrets.DOCKER_USERNAME }}/wazuh:latest"
+
+      # Paso 5: Desplegar los servicios con Docker Compose
       - name: Deploy with Docker Compose
         run: |
-          # Desplegar con el archivo modificado
-          docker-compose -f docker-compose.temp.yml up -d
+          docker-compose up -d
 

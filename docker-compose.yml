@@ -2,8 +2,11 @@ version: "3.8"
 
 services:
   nginx:
-    build: .
-    image: ${{ secrets.DOCKER_USERNAME }}/nginx:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: nginx
+    image: "${{ secrets.DOCKER_USERNAME }}/nginx:latest"
     container_name: nginx_server
     ports:
       - "80:80"
@@ -13,8 +16,11 @@ services:
       - app
 
   app:
-    build: .
-    image: ${{ secrets.DOCKER_USERNAME }}/mariadb:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: mariadb
+    image: "${{ secrets.DOCKER_USERNAME }}/mariadb:latest"
     container_name: mariadb_server
     environment:
       MYSQL_ROOT_PASSWORD: root_password
@@ -25,13 +31,14 @@ services:
       - "3306:3306"
 
   wazuh:
-    build: .
-    image: ${{ secrets.DOCKER_USERNAME }}/wazuh:4.4.0
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: wazuh
+    image: "${{ secrets.DOCKER_USERNAME }}/wazuh:latest"
     container_name: wazuh_server
     ports:
       - "1514:1514"
       - "1515:1515"
       - "55000:55000"
-    environment:
-      - ELASTIC_VERSION=7.10.2
 
