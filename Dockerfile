@@ -1,27 +1,22 @@
-# Construcción de la imagen de Nginx
-FROM nginx:latest AS nginx
+# Usa una imagen base de Python o Node.js, dependiendo de tu aplicación
+# Aquí tomamos Python 3.9 como ejemplo
+FROM python:3.9-slim
 
-# Copiar archivo de configuración de Nginx
-COPY ./nginx.conf /etc/nginx/nginx.conf
+# Establece el directorio de trabajo dentro del contenedor
+WORKDIR /app
 
-# Exponer puerto 80 para nginx
-EXPOSE 80
+# Copia el archivo requirements.txt a la imagen para instalar las dependencias
+COPY requirements.txt .
 
-# Construcción de la imagen de MariaDB
-FROM mariadb:latest AS mariadb
+# Instala las dependencias necesarias
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Establecer variables de entorno para MariaDB
-ENV MYSQL_ROOT_PASSWORD=root_password
-ENV MYSQL_DATABASE=app_db
-ENV MYSQL_USER=app_user
-ENV MYSQL_PASSWORD=app_password
+# Copia el resto de la aplicación al contenedor
+COPY . .
 
-# Exponer puerto 3306 para MariaDB
-EXPOSE 3306
+# Expon el puerto que la aplicación utilizará
+EXPOSE 5000  # Cambia el puerto según lo que use tu app
 
-# Construcción de la imagen de Wazuh
-FROM wazuh/wazuh-manager:4.4.0 AS wazuh
-
-# Exponer los puertos necesarios para Wazuh
-EXPOSE 1514 1515 55000
+# Comando para iniciar la aplicación
+CMD ["python", "app.py"]  # Cambia según el archivo de entrada de tu aplicación
 
