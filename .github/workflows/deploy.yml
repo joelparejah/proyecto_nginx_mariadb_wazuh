@@ -27,12 +27,14 @@ jobs:
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
       - name: Build and push Docker images
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          docker-compose build
-          docker-compose push
+          # Usar envsubst para sustituir variables en el archivo docker-compose.yml
+          envsubst < docker-compose.yml > docker-compose.temp.yml
+          docker-compose -f docker-compose.temp.yml build
+          docker-compose -f docker-compose.temp.yml push
 
       - name: Deploy with Docker Compose
-        run: docker-compose up -d
+        run: |
+          # Desplegar con el archivo modificado
+          docker-compose -f docker-compose.temp.yml up -d
 
