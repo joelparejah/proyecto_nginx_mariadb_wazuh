@@ -31,10 +31,4 @@ jobs:
         docker-compose -f docker-compose.yml down
         docker-compose -f docker-compose.yml up -d
 
-    - name: Notify Deployment Status
-      uses: peter-evans/slack-notify@v2
-      with:
-        slack-webhook-url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        message: "Deployment successful!"
-
 
